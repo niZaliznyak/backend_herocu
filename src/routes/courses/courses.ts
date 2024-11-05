@@ -1,34 +1,25 @@
 import { Express, Request, Response } from 'express'
 
 import { RequestWithBody, RequestWithQuery } from '../../types'
+import { CourseType, DBType } from '../../db/db'
 
 export type CourseQuery = {
   search?: string
 }
 
-export type CourseType = {
-  id: number
-  name: string
-}
-
-const DB: CourseType[] = [
-  { id: 1, name: 'course 1' },
-  { id: 2, name: 'course 2' },
-]
-
-export const addCoursesRoutes = (app: Express) => {
+export const addCoursesRoutes = (app: Express, db: DBType) => {
   app.get('/courses', (req: RequestWithQuery<CourseQuery>, res: Response<CourseType[]>) => {
-    let foundCurses = DB
+    let { courses } = db
 
     if (req.query.search) {
-      foundCurses = DB.filter(({ name }) => name.includes(req.query.search!))
+      courses = courses.filter(({ name }) => name.includes(req.query.search!))
     }
 
-    res.status(200).json(foundCurses)
+    res.status(200).json(courses)
   })
 
   app.get('/courses/:id', (req: Request<{ id: String }>, res) => {
-    const requestedCourse = DB.find((c) => c.id === +req.params.id)
+    const requestedCourse = db.courses.find((c) => c.id === +req.params.id)
 
     if (!requestedCourse) {
       res.status(404).send('no course found')
@@ -46,7 +37,7 @@ export const addCoursesRoutes = (app: Express) => {
     }
 
     const newCourse = { id: +new Date(), name }
-    DB.push(newCourse)
+    db.courses.push(newCourse)
 
     res.status(201).json(newCourse)
   })
