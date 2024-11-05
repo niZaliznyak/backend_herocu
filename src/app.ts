@@ -10,6 +10,8 @@ app.get('/', (req: Request, res: Response) => {
   res.status(200).json('wow')
 })
 
-addCoursesRoutes(app, DB)
+const coursesRouter = addCoursesRoutes(DB)
+
+app.use(coursesRouter)
 
 export default app

@@ -1,4 +1,4 @@
-import { Express, Request, Response } from 'express'
+import express, { Request, Response } from 'express'
 
 import { RequestWithBody, RequestWithQuery } from '../../types'
 import { CourseType, DBType } from '../../db/db'
@@ -7,8 +7,10 @@ export type CourseQuery = {
   search?: string
 }
 
-export const addCoursesRoutes = (app: Express, db: DBType) => {
-  app.get('/courses', (req: RequestWithQuery<CourseQuery>, res: Response<CourseType[]>) => {
+export const addCoursesRoutes = (db: DBType) => {
+  const router = express.Router()
+
+  router.get('/courses', (req: RequestWithQuery<CourseQuery>, res: Response<CourseType[]>) => {
     let { courses } = db
 
     if (req.query.search) {
@@ -18,7 +20,7 @@ export const addCoursesRoutes = (app: Express, db: DBType) => {
     res.status(200).json(courses)
   })
 
-  app.get('/courses/:id', (req: Request<{ id: String }>, res) => {
+  router.get('/courses/:id', (req: Request<{ id: String }>, res) => {
     const requestedCourse = db.courses.find((c) => c.id === +req.params.id)
 
     if (!requestedCourse) {
@@ -29,7 +31,7 @@ export const addCoursesRoutes = (app: Express, db: DBType) => {
     res.status(200).json(requestedCourse)
   })
 
-  app.post('/courses', (req: RequestWithBody<{ name: string }>, res: Response<CourseType>) => {
+  router.post('/courses', (req: RequestWithBody<{ name: string }>, res: Response<CourseType>) => {
     const { name } = req.body
     if (!name) {
       res.status(400)
@@ -41,4 +43,6 @@ export const addCoursesRoutes = (app: Express, db: DBType) => {
 
     res.status(201).json(newCourse)
   })
+
+  return router
 }
