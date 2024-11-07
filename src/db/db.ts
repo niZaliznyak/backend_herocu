@@ -1,5 +1,5 @@
 export type CourseType = {
-  id: number
+  id: string
   name: string
 }
 
@@ -9,7 +9,7 @@ export type DBType = {
 
 export const DB: DBType = {
   courses: [
-    { id: 1, name: 'course 1' },
-    { id: 2, name: 'course 2' },
+    { id: '1111', name: 'course 1' },
+    { id: '2222', name: 'course 2' },
   ],
 }

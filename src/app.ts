@@ -1,6 +1,5 @@
 import express, { Request, Response } from 'express'
-import { addCoursesRoutes } from './routes/courses/courses'
-import { DB } from './db/db'
+import { routerCourses } from './routes/courses/courses'
 
 const app = express()
 
@@ -10,8 +9,6 @@ app.get('/', (req: Request, res: Response) => {
   res.status(200).json('wow')
 })
 
-const coursesRouter = addCoursesRoutes(DB)
-
-app.use(coursesRouter)
+app.use(routerCourses)
 
 export default app

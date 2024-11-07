@@ -1,48 +1,38 @@
 import express, { Request, Response } from 'express'
 
 import { RequestWithBody, RequestWithQuery } from '../../types'
-import { CourseType, DBType } from '../../db/db'
+import { CourseType } from '../../db/db'
+import { dataActionsCourses } from '../../data-actions/coursers'
 
 export type CourseQuery = {
   search?: string
 }
 
-export const addCoursesRoutes = (db: DBType) => {
-  const router = express.Router()
+const routerCourses = express.Router()
 
-  router.get('/courses', (req: RequestWithQuery<CourseQuery>, res: Response<CourseType[]>) => {
-    let { courses } = db
+routerCourses.get('/courses', (req: RequestWithQuery<CourseQuery>, res: Response<CourseType[]>) => {
+  const courses = dataActionsCourses.getAllCourses(req.query.search || '')
+  res.status(200).json(courses)
+})
 
-    if (req.query.search) {
-      courses = courses.filter(({ name }) => name.includes(req.query.search!))
-    }
+routerCourses.get('/courses/:id', (req: Request<{ id: string }>, res) => {
+  const requestedCourse = dataActionsCourses.getCourseById(req.params.id)
 
-    res.status(200).json(courses)
-  })
+  if (!requestedCourse) {
+    res.status(404).send('no course found')
+    return
+  }
 
-  router.get('/courses/:id', (req: Request<{ id: String }>, res) => {
-    const requestedCourse = db.courses.find((c) => c.id === +req.params.id)
+  res.status(200).json(requestedCourse)
+})
 
-    if (!requestedCourse) {
-      res.status(404).send('no course found')
-      return
-    }
+routerCourses.post('/courses', (req: RequestWithBody<{ name: string }>, res: Response<CourseType>) => {
+  const newCourse = dataActionsCourses.createCourse(req.body.name)
+  if (!newCourse) {
+    res.status(400)
+  }
 
-    res.status(200).json(requestedCourse)
-  })
+  res.status(201).json(newCourse)
+})
 
-  router.post('/courses', (req: RequestWithBody<{ name: string }>, res: Response<CourseType>) => {
-    const { name } = req.body
-    if (!name) {
-      res.status(400)
-      return
-    }
-
-    const newCourse = { id: +new Date(), name }
-    db.courses.push(newCourse)
-
-    res.status(201).json(newCourse)
-  })
-
-  return router
-}
+export { routerCourses }
