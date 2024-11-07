@@ -11,7 +11,7 @@ export type CourseQuery = {
 const routerCourses = express.Router()
 
 routerCourses.get('/courses', (req: RequestWithQuery<CourseQuery>, res: Response<CourseType[]>) => {
-  const courses = dataActionsCourses.getAllCourses(req.query.search || '')
+  const courses = dataActionsCourses.getCourses(req.query.search || '')
   res.status(200).json(courses)
 })
 

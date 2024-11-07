@@ -1,7 +1,7 @@
 import { DB } from '../db/db'
 
 class DataActionsCourses {
-  getAllCourses(search: string) {
+  getCourses(search: string) {
     if (!search) {
       return DB.courses
     }
