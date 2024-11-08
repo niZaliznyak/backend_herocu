@@ -1,7 +1,10 @@
 import express, { Request, Response } from 'express'
 import { routerCourses } from './routes/courses/courses'
+import { connectToDb, getMoviesCollection } from './db/mongo'
 
 const app = express()
+
+connectToDb()
 
 app.use(express.json())
 
